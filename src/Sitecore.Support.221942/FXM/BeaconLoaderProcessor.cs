@@ -32,7 +32,14 @@ namespace Sitecore.Support.FXM
         {
             string setting = this.settings.GetSetting("Sitecore.Services.RouteBase", "sitecore/api/ssc/");
 
-            string uriHost = FxmUtility.GetUriHost(args.Context.Request.Url);
+            #region----modified part of code to use "FXM.Hostname" setting---------
+            string requestUriHost = FxmUtility.GetUriHost(args.Context.Request.Url);
+            string uriHost = Sitecore.Configuration.Settings.GetSetting("FXM.Hostname");
+            if (string.IsNullOrEmpty(uriHost))
+            {
+                uriHost = requestUriHost;
+            }
+            #endregion----------
 
             string str3 = "{0}{1}/{2}/{3}".FormatWith(new object[] { this.protocol, uriHost.TrimEnd(new char[] { '/' }), setting.TrimEnd(new char[] { '/' }), this.service });
             string uniqueFilename = this.fileUtil.GetUniqueFilename(Settings.TempFolderPath + "/beacon.js");
