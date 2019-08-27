@@ -1,10 +1,11 @@
-﻿namespace Sitecore.FXM.Pipelines.Bundle
+﻿namespace Sitecore.Support.FXM.Pipelines.Bundle
 {
     using Sitecore;
     using Sitecore.Abstractions;
     using Sitecore.Diagnostics;
     using Sitecore.FXM.Abstractions;
     using Sitecore.FXM.Configuration;
+    using Sitecore.FXM.Pipelines.Bundle;
     using Sitecore.StringExtensions;
     using System;
     using System.Web.Optimization;
@@ -30,7 +31,13 @@
 
         public void Process(BundleGeneratorArgs args)
         {
-            string endpoint = this.ResolveEndpoint(args.HostName);
+            string requestUriHost = args.HostName;
+            string uriHost = Sitecore.Configuration.Settings.GetSetting("FXM.Hostname");
+            if (string.IsNullOrEmpty(uriHost))
+            {
+                uriHost = requestUriHost;
+            }
+            string endpoint = this.ResolveEndpoint(uriHost);
             string path = this.GenerateFileOutput(endpoint);
             this._fileUtil.WriteToFile(path, string.Format("SCBeacon = new SCBeacon(\"{0}\");", endpoint), false);
             args.Bundle.Include("~" + path, Array.Empty<IItemTransform>());
